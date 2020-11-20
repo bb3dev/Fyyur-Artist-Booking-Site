@@ -20,7 +20,6 @@ from forms import *
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres: @localhost:5432/fyyur'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -41,9 +40,11 @@ class Venue(db.Model):
     state = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
-    website = db.Column(db.String(120), nullable=False)
     image_link = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
+
+    def __repr__(self):
+        return f'<Venue ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -53,7 +54,7 @@ class Artist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
-    genre = db.Column(db.String(120), nullable=False)
+    genres = db.Column(db.String(120), nullable=False)
     city = db.Column(db.String(120), nullable=False)
     state = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(120), nullable=False)
@@ -61,6 +62,9 @@ class Artist(db.Model):
     website = db.Column(db.String(120), nullable=False)
     image_link = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
+
+#    def __repr__(self):
+#        return f'<Artist ID: {self.id}, name: {self.name}, genres: {self.genres}, city: {self.city}, state: {self.state}#, address: {self.address}, phone: {self.phone}, website: {self.website}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
@@ -68,11 +72,14 @@ class Artist(db.Model):
 
 class Shows(db.Model):
     __tablename__ = 'Shows'
-
+    id = db.Column(db.Integer, primary_key=True)
     artist_id = db.Column(db.Integer, db.ForeignKey(
         'Artist.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
     start_time = db.Column(db.DateTime())
+
+#    def __repr__(self):
+#        return f'< Shows ID: {self.id}, artist_id: {self.artist_id}, venue_id: {self.venue_id}, start_time: {self.start_time}>'
 
 #----------------------------------------------------------------------------#
 # Filters.
