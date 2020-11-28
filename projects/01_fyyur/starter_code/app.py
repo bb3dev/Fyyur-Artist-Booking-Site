@@ -44,9 +44,9 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120), nullable=False)
 
     def __repr__(self):
-        return f'<Venue ID: {self.id}, name: {self.name}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
+        return f'<Venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.image_link}, {self.facebook_link}>'
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
 
 class Artist(db.Model):
@@ -64,10 +64,10 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120), nullable=False)
 
 #    def __repr__(self):
-#        return f'<Artist ID: {self.id}, name: {self.name}, genres: {self.genres}, city: {self.city}, state: {self.state}#, address: {self.address}, phone: {self.phone}, website: {self.website}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+#        return f'<Artist ID: {self.id}, name: {self.name}, genres: {self.genres}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, website: {self.website}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
+    # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# TODO Done: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 
 class Shows(db.Model):
@@ -112,36 +112,17 @@ def index():
 
 @app.route('/venues')
 def venues():
-    # TODO: replace with real venues data.
+    # TODO Done: replace with real venues data.
     #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data = [{
-        "city": "San Francisco",
-        "state": "CA",
-        "venues": [{
-            "id": 1,
-            "name": "The Musical Hop",
-            "num_upcoming_shows": 0,
-        }, {
-            "id": 3,
-            "name": "Park Square Live Music & Coffee",
-            "num_upcoming_shows": 1,
-        }]
-    }, {
-        "city": "New York",
-        "state": "NY",
-        "venues": [{
-            "id": 2,
-            "name": "The Dueling Pianos Bar",
-            "num_upcoming_shows": 0,
-        }]
-    }]
+
+    data = Venue.query.order_by('id').all()
     return render_template('pages/venues.html', areas=data)
 
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
     # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-    # seach for Hop should return "The Musical Hop".
+    # search for Hop should return "The Musical Hop".
     # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
     response = {
         "count": 1,
