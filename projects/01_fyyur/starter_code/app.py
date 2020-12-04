@@ -3,9 +3,10 @@
 #----------------------------------------------------------------------------#
 
 import json
+import sys
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify, abort
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -40,8 +41,12 @@ class Venue(db.Model):
     state = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
-    image_link = db.Column(db.String(500), nullable=False)
+    genres = db.Column(db.String(120), nullable=False)
+    website = db.Column(db.String(120), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
+    seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String(500), nullable=False)
+    image_link = db.Column(db.String(500), nullable=False)
 
     def __repr__(self):
         return f'<Venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.image_link}, {self.facebook_link}>'
@@ -60,8 +65,10 @@ class Artist(db.Model):
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
     website = db.Column(db.String(120), nullable=False)
-    image_link = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
+    seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String(500), nullable=False)
+    image_link = db.Column(db.String(500), nullable=False)
 
 #    def __repr__(self):
 #        return f'<Artist ID: {self.id}, name: {self.name}, genres: {self.genres}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, website: {self.website}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
@@ -159,12 +166,47 @@ def create_venue_submission():
     # TODO: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
 
+    error = False
+    #body = {}
+    try:
+        name = request.get_json()['name']
+        city = request.get_json()['city']
+        state = request.get_json()['state']
+        address = request.get_json()['address']
+        phone = request.get_json()['phone']
+        image_link = request.get_json()['image_link']
+        facebook_link = request.get_json()['facebook_link']
+        venue = Venue(name=name, city=city, state=state, address=address,
+                      phone=phone, image_link=image_link, facebook_link=facebook_link)
+        db.session.add(venue)
+        db.session.commit()
+    #    body['id'] = venue.id
+    #    body['name'] = venue.name
+    #    body['city'] = venue.city
+    #    body['state'] = venue.state
+    #    body['address'] = venue.address
+    #    body['phone'] = venue.phone
+    #    body['genres'] = venue.genres
+    #    body['facebook_link'] = venue.facebook_link
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        flash('An error occurred. Venue ' +
+              venue.name + ' could not be listed.')
+        abort(500)
+    else:
+        flash('Venue ' + request.form['name'] + ' was successfully listed!')
+        return render_template('pages/home.html')
+    #    return jsonify(body)
     # on successful db insert, flash success
-    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+
     # TODO: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-    return render_template('pages/home.html')
 
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
