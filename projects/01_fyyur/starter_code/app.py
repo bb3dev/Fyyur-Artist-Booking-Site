@@ -42,14 +42,12 @@ class Venue(db.Model):
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
     genres = db.Column(db.String(120), nullable=False)
-    website = db.Column(db.String(120), nullable=False)
+    image_link = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
-    seeking_description = db.Column(db.String(500), nullable=False)
-    image_link = db.Column(db.String(500), nullable=False)
 
     def __repr__(self):
-        return f'<Venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.image_link}, {self.facebook_link}>'
+        return f'<Venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.genres}, {self.image_link}, {self.facebook_link}, {self.seeking_talent}>'
 
     # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -62,12 +60,9 @@ class Artist(db.Model):
     genres = db.Column(db.String(120), nullable=False)
     city = db.Column(db.String(120), nullable=False)
     state = db.Column(db.String(120), nullable=False)
-    address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
-    website = db.Column(db.String(120), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
-    seeking_description = db.Column(db.String(500), nullable=False)
     image_link = db.Column(db.String(500), nullable=False)
 
 #    def __repr__(self):
@@ -163,31 +158,24 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-    # TODO: insert form data as a new Venue record in the db, instead
+    # TODO:Done: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
-
+    form = VenueForm()
     error = False
-    #body = {}
     try:
-        name = request.get_json()['name']
-        city = request.get_json()['city']
-        state = request.get_json()['state']
-        address = request.get_json()['address']
-        phone = request.get_json()['phone']
-        image_link = request.get_json()['image_link']
-        facebook_link = request.get_json()['facebook_link']
-        venue = Venue(name=name, city=city, state=state, address=address,
-                      phone=phone, image_link=image_link, facebook_link=facebook_link)
+        name = request.form.get('name')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        address = request.form.get('address')
+        genres = request.form.get('genres')
+        phone = request.form.get('phone')
+        image_link = request.form.get('image_link')
+        facebook_link = request.form.get('facebook_link')
+        seeking_talent = request.form.get('seeking_talent')
+        venue = Venue(name=name, city=city, state=state, address=address, phone=phone, genres=genres,
+                      image_link=image_link, facebook_link=facebook_link, seeking_talent=seeking_talent)
         db.session.add(venue)
         db.session.commit()
-    #    body['id'] = venue.id
-    #    body['name'] = venue.name
-    #    body['city'] = venue.city
-    #    body['state'] = venue.state
-    #    body['address'] = venue.address
-    #    body['phone'] = venue.phone
-    #    body['genres'] = venue.genres
-    #    body['facebook_link'] = venue.facebook_link
     except:
         error = True
         db.session.rollback()
@@ -195,16 +183,13 @@ def create_venue_submission():
     finally:
         db.session.close()
     if error:
-        flash('An error occurred. Venue ' +
-              venue.name + ' could not be listed.')
         abort(500)
     else:
         flash('Venue ' + request.form['name'] + ' was successfully listed!')
-        return render_template('pages/home.html')
-    #    return jsonify(body)
+        return render_template('forms/new_venue.html', form=form)
     # on successful db insert, flash success
 
-    # TODO: on unsuccessful db insert, flash an error instead.
+    # TODO:Done: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
 
@@ -232,7 +217,7 @@ def artists():
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
     # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-    # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
+    # search for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
     # search for "band" should return "The Wild Sax Band".
     response = {
         "count": 1,
@@ -324,14 +309,37 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     # called upon submitting the new artist listing form
-    # TODO: insert form data as a new Venue record in the db, instead
+    # TODO:Done: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
-
+    form = ArtistForm()
+    error = False
+    try:
+        name = request.form.get('name')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        genres = request.form.get('genres')
+        phone = request.form.get('phone')
+        image_link = request.form.get('image_link')
+        facebook_link = request.form.get('facebook_link')
+        seeking_venue = request.form.get('seeking_venue')
+        artist = Artist(name=name, city=city, state=state, phone=phone, genres=genres,
+                        image_link=image_link, facebook_link=facebook_link, seeking_venue=seeking_venue)
+        db.session.add(artist)
+        db.session.commit()
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(500)
+    else:
+        flash('Artist ' + request.form['name'] + ' was successfully listed!')
+        return render_template('forms/new_artist.html', form=form)
     # on successful db insert, flash success
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
+    # TODO:Done: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
-    return render_template('pages/home.html')
 
 
 #  Shows
@@ -356,14 +364,32 @@ def create_shows():
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
     # called to create new shows in the db, upon submitting new show listing form
-    # TODO: insert form data as a new Show record in the db, instead
-
+    # TODO: Done insert form data as a new Show record in the db, instead
+    form = ShowForm()
+    error = False
+    try:
+        artist_id = request.form.get('artist_id')
+        venue_id = request.form.get('venue_id')
+        start_time = request.form.get('start_time')
+        shows = Shows(artist_id=artist_id, venue_id=venue_id,
+                      start_time=start_time)
+        db.session.add(shows)
+        db.session.commit()
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(500)
+    else:
+        flash('Show was successfully booked!')
+        return render_template('pages/home.html', form=form)
     # on successful db insert, flash success
-    flash('Show was successfully listed!')
     # TODO: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Show could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-    return render_template('pages/home.html')
 
 
 @app.errorhandler(404)
