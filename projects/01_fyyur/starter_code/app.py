@@ -17,7 +17,7 @@ from forms import *
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
-
+#This comment was used for testing purposes for git commits
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
