@@ -25,7 +25,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
-# TODO: connect to a local postgresql database
+# TODO Done: connect to a local postgresql database
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -46,8 +46,8 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120), nullable=False)
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __repr__(self):
-        return f'<Venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.genres}, {self.image_link}, {self.facebook_link}, {self.seeking_talent}>'
+#   def __repr__(self):
+#       return f'<venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.genres}, {self.image_link}, {self.facebook_link}, {self.seeking_talent}>'
 
     # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
