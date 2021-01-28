@@ -319,10 +319,11 @@ def create_artist_submission():
         state = request.form.get('state')
         genres = request.form.get('genres')
         phone = request.form.get('phone')
+        website= request.form.get('website')
         image_link = request.form.get('image_link')
         facebook_link = request.form.get('facebook_link')
         seeking_venue = request.form.get('seeking_venue')
-        artist = Artist(name=name, city=city, state=state, phone=phone, genres=genres,
+        artist = Artist(name=name, city=city, state=state, phone=phone, genres=genres, website=website,
                         image_link=image_link, facebook_link=facebook_link, seeking_venue=seeking_venue)
         db.session.add(artist)
         db.session.commit()
