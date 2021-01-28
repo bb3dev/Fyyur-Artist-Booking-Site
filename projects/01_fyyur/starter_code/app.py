@@ -41,10 +41,10 @@ class Venue(db.Model):
     state = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
-    genres = db.Column(db.String(120), nullable=False)
-    image_link = db.Column(db.String(500), nullable=False)
+    website = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
+    image_link = db.Column(db.String(500), nullable=False)
 
 #   def __repr__(self):
 #       return f'<venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.genres}, {self.image_link}, {self.facebook_link}, {self.seeking_talent}>'
@@ -61,6 +61,7 @@ class Artist(db.Model):
     city = db.Column(db.String(120), nullable=False)
     state = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120), nullable=False)
+    website = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
     image_link = db.Column(db.String(500), nullable=False)
@@ -167,13 +168,12 @@ def create_venue_submission():
         city = request.form.get('city')
         state = request.form.get('state')
         address = request.form.get('address')
-        genres = request.form.get('genres')
         phone = request.form.get('phone')
+        website= request.form.get('website')
         image_link = request.form.get('image_link')
         facebook_link = request.form.get('facebook_link')
         seeking_talent = request.form.get('seeking_talent')
-        venue = Venue(name=name, city=city, state=state, address=address, phone=phone, genres=genres,
-                      image_link=image_link, facebook_link=facebook_link, seeking_talent=seeking_talent)
+        venue = Venue(name=name, city=city, state=state, address=address, phone=phone, website=website, image_link=image_link, facebook_link=facebook_link, seeking_talent=seeking_talent)
         db.session.add(venue)
         db.session.commit()
     except:
