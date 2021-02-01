@@ -46,8 +46,8 @@ class Venue(db.Model):
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
     image_link = db.Column(db.String(500), nullable=False)
 
-#   def __repr__(self):
-#       return f'<venue {self.id}, {self.name}, {self.city}, {self.state}, {self.address}, {self.phone}, {self.genres}, {self.image_link}, {self.facebook_link}, {self.seeking_talent}>'
+    def __repr__(self):
+        return f'<Venue {self.id}, {self.name}>'
 
     # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -66,8 +66,8 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
     image_link = db.Column(db.String(500), nullable=False)
 
-#    def __repr__(self):
-#        return f'<Artist ID: {self.id}, name: {self.name}, genres: {self.genres}, city: {self.city}, state: {self.state}, address: {self.address}, phone: {self.phone}, website: {self.website}, image_link: {self.image_link}, facebook_link: {self.facebook_link}>'
+    def __repr__(self):
+        return f'<Artist ID: {self.id}, name: {self.name}>'
     # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Done: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
@@ -76,13 +76,12 @@ class Artist(db.Model):
 class Shows(db.Model):
     __tablename__ = 'Shows'
     id = db.Column(db.Integer, primary_key=True)
-    artist_id = db.Column(db.Integer, db.ForeignKey(
-        'Artist.id'), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
-    start_time = db.Column(db.DateTime())
+    start_time = db.Column(db.DateTime, nullable=False)
 
-#    def __repr__(self):
-#        return f'< Shows ID: {self.id}, artist_id: {self.artist_id}, venue_id: {self.venue_id}, start_time: {self.start_time}>'
+    def __repr__(self):
+        return f'< Shows ID: {self.id}, artist_id: {self.artist_id}, venue_id: {self.venue_id}>'
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -372,8 +371,7 @@ def create_show_submission():
         artist_id = request.form.get('artist_id')
         venue_id = request.form.get('venue_id')
         start_time = request.form.get('start_time')
-        shows = Shows(artist_id=artist_id, venue_id=venue_id,
-                      start_time=start_time)
+        shows = Shows(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
         db.session.add(shows)
         db.session.commit()
     except:
