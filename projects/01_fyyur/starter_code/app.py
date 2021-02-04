@@ -44,6 +44,7 @@ class Venue(db.Model):
     website = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String(120), nullable=True)
     image_link = db.Column(db.String(500), nullable=False)
 
     def __repr__(self):
@@ -64,6 +65,7 @@ class Artist(db.Model):
     website = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(120), nullable=False)
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String(120), nullable=True)
     image_link = db.Column(db.String(500), nullable=False)
 
     def __repr__(self):
@@ -171,7 +173,8 @@ def create_venue_submission():
         image_link = request.form.get('image_link')
         facebook_link = request.form.get('facebook_link')
         seeking_talent = request.form.get('seeking_talent')
-        venue = Venue(name=name, city=city, state=state, address=address, phone=phone, website=website, image_link=image_link, facebook_link=facebook_link, seeking_talent=seeking_talent)
+        seeking_description = request.form.get('seeking_description')
+        venue = Venue(name=name, city=city, state=state, address=address, phone=phone, website=website, image_link=image_link, facebook_link=facebook_link, seeking_talent=seeking_talent, seeking_description=seeking_description)
         db.session.add(venue)
         db.session.commit()
     except:
@@ -321,8 +324,9 @@ def create_artist_submission():
         image_link = request.form.get('image_link')
         facebook_link = request.form.get('facebook_link')
         seeking_venue = request.form.get('seeking_venue')
+        seeking_description = request.form.get('seeking_description')
         artist = Artist(name=name, city=city, state=state, phone=phone, genres=genres, website=website,
-                        image_link=image_link, facebook_link=facebook_link, seeking_venue=seeking_venue)
+                        image_link=image_link, facebook_link=facebook_link, seeking_venue=seeking_venue, seeking_description=seeking_description)
         db.session.add(artist)
         db.session.commit()
     except:
