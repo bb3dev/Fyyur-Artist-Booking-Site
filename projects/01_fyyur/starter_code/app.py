@@ -87,7 +87,6 @@ class Shows(db.Model):
 # Filters.
 #----------------------------------------------------------------------------#
 
-
 def format_datetime(value, format='medium'):
     date = dateutil.parser.parse(value)
     if format == 'full':
