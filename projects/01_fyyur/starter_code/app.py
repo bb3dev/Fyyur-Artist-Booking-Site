@@ -161,35 +161,37 @@ def create_venue_form():
 def create_venue_submission():
     # TODO:Done: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
-    form = VenueForm()
-    error = False
+    form = VenueForm(request.form)
+    
+    venue = Venue(
+    name = form.name.data,
+    genres = form.genres.data,
+    address = form.address.data,
+    city = form.city.data,
+    state = form.state.data,
+    phone = form.phone.data,
+    website = form.website.data,
+    facebook_link = form.facebook_link.data,
+    seeking_talent = form.seeking_talent.data,
+    seeking_description = form.seeking_description.data,
+    image_link = form.image_link.data
+    )
+
     try:
-        name = request.form.get('name')
-        city = request.form.get('city')
-        state = request.form.get('state')
-        address = request.form.get('address')
-        phone = request.form.get('phone')
-        website= request.form.get('website')
-        image_link = request.form.get('image_link')
-        facebook_link = request.form.get('facebook_link')
-        seeking_talent = request.form.get('seeking_talent')
-        seeking_description = request.form.get('seeking_description')
-        venue = Venue(name=name, city=city, state=state, address=address, phone=phone, website=website, image_link=image_link, facebook_link=facebook_link, seeking_talent=seeking_talent, seeking_description=seeking_description)
         db.session.add(venue)
         db.session.commit()
-    except:
-        error = True
+        flash('Venue ' + form.name.data + ' was successfully listed!')
+
+    except ValueError as error:
+        print(error)
+        flash('An error occurred. Venue ' + data.name + ' could not be listed.')
         db.session.rollback()
-        print(sys.exc_info())
+        
     finally:
         db.session.close()
-    if error:
-        abort(500)
-    else:
-        flash('Venue ' + request.form['name'] + ' was successfully listed!')
         return render_template('forms/new_venue.html', form=form)
-    # on successful db insert, flash success
 
+    # on successful db insert, flash success
     # TODO:Done: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
@@ -312,34 +314,35 @@ def create_artist_submission():
     # called upon submitting the new artist listing form
     # TODO:Done: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
-    form = ArtistForm()
-    error = False
+    form = ArtistForm(request.form)
+    
+    artist = Artist(
+    name = form.name.data,
+    genres = form.genres.data,
+    city = form.city.data,
+    state = form.state.data,
+    phone = form.phone.data,
+    website = form.website.data,
+    facebook_link = form.facebook_link.data,
+    seeking_venue = form.seeking_venue.data,
+    seeking_description = form.seeking_description.data,
+    image_link = form.image_link.data
+    )
+
     try:
-        name = request.form.get('name')
-        city = request.form.get('city')
-        state = request.form.get('state')
-        genres = request.form.get('genres')
-        phone = request.form.get('phone')
-        website= request.form.get('website')
-        image_link = request.form.get('image_link')
-        facebook_link = request.form.get('facebook_link')
-        seeking_venue = request.form.get('seeking_venue')
-        seeking_description = request.form.get('seeking_description')
-        artist = Artist(name=name, city=city, state=state, phone=phone, genres=genres, website=website,
-                        image_link=image_link, facebook_link=facebook_link, seeking_venue=seeking_venue, seeking_description=seeking_description)
         db.session.add(artist)
         db.session.commit()
-    except:
-        error = True
+        flash('Artist ' + form.name.data + ' was successfully listed!')
+
+    except ValueError as error:
+        print(error)
+        flash('An error occurred. Artist ' + data.name + ' could not be listed.')
         db.session.rollback()
-        print(sys.exc_info())
+        
     finally:
         db.session.close()
-    if error:
-        abort(500)
-    else:
-        flash('Artist ' + request.form['name'] + ' was successfully listed!')
         return render_template('forms/new_artist.html', form=form)
+
     # on successful db insert, flash success
     # TODO:Done: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
@@ -368,26 +371,28 @@ def create_shows():
 def create_show_submission():
     # called to create new shows in the db, upon submitting new show listing form
     # TODO: Done insert form data as a new Show record in the db, instead
-    form = ShowForm()
-    error = False
+    form = ShowForm(request.form)
+    
+    shows = Shows(
+    artist_id=form.artist_id.data,
+    venue_id=form.venue_id.data,
+    start_time=form.start_time.data
+    )
+
     try:
-        artist_id = request.form.get('artist_id')
-        venue_id = request.form.get('venue_id')
-        start_time = request.form.get('start_time')
-        shows = Shows(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
         db.session.add(shows)
         db.session.commit()
-    except:
-        error = True
+        flash('Show was successfully booked!')
+
+    except ValueError as error:
+        print(error)
+        flash('An error occurred. Shows could not be booked.')
         db.session.rollback()
-        print(sys.exc_info())
+        
     finally:
         db.session.close()
-    if error:
-        abort(500)
-    else:
-        flash('Show was successfully booked!')
         return render_template('pages/home.html', form=form)
+
     # on successful db insert, flash success
     # TODO: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Show could not be listed.')
