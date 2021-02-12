@@ -21,7 +21,6 @@ from forms import *
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
@@ -46,6 +45,7 @@ class Venue(db.Model):
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
     seeking_description = db.Column(db.String(120), nullable=True)
     image_link = db.Column(db.String(500), nullable=False)
+    shows = db.relationship('Shows', backref='venue', lazy=True)
 
     def __repr__(self):
         return f'<Venue {self.id}, {self.name}>'
@@ -67,6 +67,7 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
     seeking_description = db.Column(db.String(120), nullable=True)
     image_link = db.Column(db.String(500), nullable=False)
+    shows = db.relationship('Shows', backref='artist', lazy=True)
 
     def __repr__(self):
         return f'<Artist ID: {self.id}, name: {self.name}>'
@@ -80,10 +81,10 @@ class Shows(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
-    start_time = db.Column(db.DateTime, nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'< Shows ID: {self.id}, artist_id: {self.artist_id}, venue_id: {self.venue_id}>'
+        return f'< Shows ID: {self.id}, artist_id: {self.artist_id}, venue_id: {self.venue_id}, start_time: {self.start_time}>'
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -95,7 +96,7 @@ def format_datetime(value, format='medium'):
         format = "EEEE MMMM, d, y 'at' h:mma"
     elif format == 'medium':
         format = "EE MM, dd, y h:mma"
-    return babel.dates.format_datetime(date, format)
+    return babel.dates.format_datetime(date, format, locale='en')
 
 
 app.jinja_env.filters['datetime'] = format_datetime
@@ -356,8 +357,21 @@ def shows():
     # displays list of shows at /shows
     # TODO Done: replace with real venues data.
     #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data = Shows.query.all()
+    
+    shows = Shows.query.all()
+    data = []
+    for show in shows:
+        data.append({
+            "venue_id": show.venue_id,
+            "venue_name": Venue.query.filter_by(id=show.venue_id).first().name,
+            "artist_id": show.artist_id,
+            "artist_name": Artist.query.filter_by(id=show.artist_id).first().name,
+            "artist_image_link": Artist.query.filter_by(id=show.artist_id).first().image_link,
+            "start_time": format_datetime(str(show.start_time))
+        })
+
     return render_template('pages/shows.html', shows=data)
+
 
 
 @app.route('/shows/create')
