@@ -41,7 +41,13 @@
 			<i class="fas fa-moon"></i> Not currently seeking talent
 		</p>
 		{% endif %}
+		<div>
+			<button class="delete" data-id="{{ venue.id }}">&cross; Delete</button>
+	
+			<button class="edit" data-id="{{ venue.id }}">&#x02702; Edit</button>
+		</div>
 	</div>
+	
 	<div class="col-sm-6">
 		<img src="{{ venue.image_link }}" alt="Venue Image" />
 	</div>
@@ -74,6 +80,28 @@
 		{% endfor %}
 	</div>
 </section>
+<script>
+	let deleteBtn
+	deleteBtn = document.querySelectorAll(".delete-todo");
+        for (let i = 0; i < deleteBtn.length; i++) {
+            const deleteBtn = deleteBtn[i];
+            deleteBtn.onclick = function (e) {
+                console.log("Delete event: ", e);
+                const venueId = e.target.dataset.id;
+                fetch('/venues/' + venueId + '/delete', {
+                    method: 'DELETE'
+                }).then(function () {
+                    console.log('Parent?', e.target);
+                    const item = e.target.parentElement;
+                    item.remove();
+                    document.getElementById(" error").className = "hidden";
+                }).catch(function (e) {
+                    console.error(e);
+                    document.getElementById("error").className = "";
+                });
+            };
+        }
+</script>
 
 {% endblock %}
 

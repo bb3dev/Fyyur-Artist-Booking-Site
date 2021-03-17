@@ -351,7 +351,7 @@ def delete_artist(artist_id):
 
     finally:
         db.session.close()
-        return render_template('forms/artist_venue.html', form=form)
+        return render_template('forms/new_artist.html', form=form)
 
 #  Edit Artist
 
